@@ -1,0 +1,114 @@
+syntax = "proto3";
+package personaldata;
+import public "google/protobuf/empty.proto";
+
+message DateTimeGrpc {
+  sint64 value = 1; // the offset (in units of the selected scale) from 1970/01/01
+  TimeSpanScaleGrpc scale = 2; // the scale of the timespan [default = DAYS]
+  DateTimeKindGrpc kind = 3; // the kind of date/time being represented [default = UNSPECIFIED]
+
+  enum TimeSpanScaleGrpc {
+    DAYS = 0;
+    HOURS = 1;
+    MINUTES = 2;
+    SECONDS = 3;
+    MILLISECONDS = 4;
+    TICKS = 5;
+
+    MINMAX = 15; // dubious
+  }
+  enum DateTimeKindGrpc
+  {
+    // The time represented is not specified as either local time or Coordinated Universal Time (UTC).
+    UNSPECIFIED = 0;
+    // The time represented is UTC.
+    UTC = 1;
+    // The time represented is local time.
+    LOCAL = 2;
+  }
+}
+
+message GetPersonalDataByIdRequest {
+  string id = 1;
+}
+
+message GetPersonalDataByIdResponse {
+  PersonalDataGrpcModel item = 1;
+}
+
+message PersonalDataGrpcModel {
+  string id = 1;
+  string email = 2;
+  optional string first_name = 3;
+  optional string last_name = 4;
+  optional int32 sex = 5;
+  optional DateTimeGrpc date_of_birth = 6;
+  optional string residence_country = 7;
+  optional string citizenship_country = 8;
+  optional string city = 9;
+  optional string postal_code = 10;
+  optional string phone = 11;
+  optional int32 kyc = 12;
+  optional DateTimeGrpc email_confirm_date = 13;
+  //  AuditLogGrpcModel audit_log = 14;
+  optional string address = 15;
+  optional string registration_country = 17;
+  optional string registration_ip = 18;
+  repeated ExternalDataGrpcModel external_data = 19;
+  string brand_id = 20;
+  DateTimeGrpc created_date = 23;
+  optional DateTimeGrpc deactivate_date = 26;
+}
+
+message ExternalDataGrpcModel {
+  string key = 1;
+  string value = 2;
+}
+
+message UpdatePersonalDataGrpcRequest {
+  string id = 1;
+  optional string first_name = 2;
+  optional string last_name = 3;
+  optional int32 sex = 4;
+  optional DateTimeGrpc date_of_birth = 5;
+  optional string residence_country = 6;
+  optional string citizenship_country = 7;
+  optional string city = 8;
+  optional string postal_code = 9;
+  optional string phone = 10;
+  PersonalDataAuditLogGrpcModel audit_log = 11;
+  optional string address = 12;
+}
+
+message PersonalDataAuditLogGrpcModel {
+  string trader_id = 1;
+  string ip = 2;
+  string service = 3;
+  string process = 4;
+  string context = 5;
+}
+
+message UpdatePersonalDataGrpcResponse {
+  bool is_ok = 1;
+}
+
+message GetPersonalDataByPhoneGrpcRequest {
+  string phone = 1;
+}
+
+message GetPersonalDataByPhoneGrpcResponse {
+  PersonalDataGrpcModel item = 1;
+}
+
+message DeactivatePersonalDataGrpcRequest {
+  string trader_id = 1;
+}
+
+service PersonalDataService {
+  rpc GetById(GetPersonalDataByIdRequest) returns (GetPersonalDataByIdResponse);
+  rpc Update(UpdatePersonalDataGrpcRequest) returns (UpdatePersonalDataGrpcResponse);
+  rpc GetByPhone(GetPersonalDataByPhoneGrpcRequest) returns (GetPersonalDataByPhoneGrpcResponse);
+  rpc Deactivate(DeactivatePersonalDataGrpcRequest) returns (google.protobuf.Empty);
+
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

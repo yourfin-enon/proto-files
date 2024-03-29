@@ -1,0 +1,35 @@
+syntax = "proto3";
+package monetix;
+import public "google/protobuf/empty.proto";
+
+message GetMonetixPaymentPageGrpcRequest {
+    string client_id = 1;
+    string asset_symbol = 2;
+    double asset_amount = 3;
+    int64 expire_date_micros = 4;
+    string transaction_id = 5;
+    string client_email = 6;
+    string client_first_name = 7;
+    string client_last_name = 8;
+}
+
+message GetMonetixPaymentPageGrpcResponse {
+    string message = 1;
+    bool is_success = 2;
+    MonetixPaymentPageGrpcModel item = 3;
+}
+
+message MonetixPaymentPageGrpcModel {
+    MonetixPaymentPageType value_type = 1;
+    string value = 2;
+}
+
+enum MonetixPaymentPageType {
+    URL = 0;
+    HTML = 1;
+}
+
+service MonetixService{
+    rpc GetPaymentPage(GetMonetixPaymentPageGrpcRequest) returns (GetMonetixPaymentPageGrpcResponse);
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}
