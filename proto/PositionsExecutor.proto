@@ -1,0 +1,172 @@
+syntax = "proto3";
+package positionsexecutor;
+import public "google/protobuf/empty.proto";
+
+message OpenPositionGrpcRequest {
+    string WalletId = 1;
+    string Instrument = 2;
+    string BaseAsset = 3;
+    double Leverage = 4;
+    AutoCloseConfigGrpcModel TakeProfit = 5;
+    AutoCloseConfigGrpcModel StopLoss = 6;
+    map<string, double> InvestedAssets = 7;
+    optional double DesirePrice = 8;
+    string ProcessId = 9;
+    OrderSideGrpc Side = 10;
+    bool TopUpEnabled = 11;
+    string TraderId = 12;
+    double StopOutPercent = 13;
+    double MarginCallPercent = 14;
+    double TopUpPercent = 15;
+    optional string PositionId = 16;
+}
+
+message GetPositionsGrpcRequest {
+    string WalletId = 1;
+}
+
+message GetPositionsGrpcResponse {
+    repeated PositionGrpcModel Positions = 1;
+    bool IsSuccess = 2;
+    string Message = 3;
+}
+
+message GetPositionGrpcRequest {
+    string WalletId = 1;
+    string PositionId = 2;
+}
+
+message GetPositionGrpcResponse {
+    PositionGrpcModel Position = 1;
+    bool IsSuccess = 2;
+    string Message = 3;
+}
+
+message OpenPositionGrpcResponse {
+    PositionGrpcModel Position = 1;
+    bool IsSuccess = 2;
+    string Message = 3;
+}
+
+message ClosePositionGrpcRequest {
+    string WalletId = 1;
+    string PositionId = 2;
+    string TraderId = 3;
+    PositionCloseReasonGrpc reason = 4;
+}
+
+message ClosePositionGrpcResponse {
+    PositionGrpcModel Position = 1;
+    bool IsSuccess = 2;
+    string Message = 3;
+}
+
+message UpdatePositionGrpcRequest {
+    string WalletId = 1;
+    string PositionId = 2;
+    optional double DesirePrice = 3;
+    UpdateAutoCloseConfigGrpcModel TakeProfit = 4;
+    UpdateAutoCloseConfigGrpcModel StopLoss = 5;
+    optional bool TopUpEnabled = 6;
+}
+
+message UpdatePositionGrpcResponse {
+    PositionGrpcModel Position = 1;
+    bool IsSuccess = 2;
+    string Message = 3;
+}
+
+message PositionGrpcModel {
+    string Id = 1;
+    OrderGrpcModel Order = 2;
+    optional int64 ActivateDateMicros = 3;
+    optional double ActivatePrice = 4;
+    optional int64 CloseDateMicros = 5;
+    optional double ClosePrice = 6;
+    optional double Pnl = 7;
+    map<string, double> ActivateAssetPrices = 8;
+    map<string, double> CloseAssetPrices = 9;
+    map<string, double> OpenAssetPrices = 10;
+    int64 OpenDateMicros = 11;
+    map<string, double> AssetPnls = 12;
+    PositionStatusGrpc Status = 13;
+    optional PositionCloseReasonGrpc CloseReason = 14;
+    repeated PositionTopUpGrpcModel TopUps = 15;
+    map<string, double> TotalInvestAssets = 16;
+    double OpenPrice = 17;
+}
+
+message OrderGrpcModel {
+    string Id = 1;
+    string WalletId = 2;
+    string Instrument = 3;
+    string BaseAsset = 4;
+    double Leverage = 5;
+    OrderSideGrpc Side = 7;
+    AutoCloseConfigGrpcModel TakeProfit = 8;
+    AutoCloseConfigGrpcModel StopLoss = 9;
+    double StopOutPercent = 10;
+    double MarginCallPercent = 11;
+    map<string, double> InvestAssets = 12;
+    optional double DesirePrice = 13;
+    bool TopUpEnabled = 14;
+    OrderTypeGrpc OrderType = 15;
+    string TraderId = 16;
+    int64 CreateDateMicros = 17;
+    double TopUpPercent = 18;}
+
+enum OrderSideGrpc {
+    Buy = 0;
+    Sell = 1;
+}
+
+enum OrderTypeGrpc {
+    Market = 0;
+    Limit = 1;
+}
+
+enum PositionStatusGrpc {
+    Pending = 0;
+    Active = 1;
+    Filled = 2;
+    Canceled = 3;
+}
+
+enum PositionCloseReasonGrpc {
+    ClientCommand = 0;
+    StopOut = 1;
+    TakeProfit = 2;
+    StopLoss = 3;
+    AdminCommand = 4;
+    InsufficientBalance = 5;
+}
+
+message UpdateAutoCloseConfigGrpcModel {
+    AutoCloseConfigGrpcModel value = 1;
+}
+
+message AutoCloseConfigGrpcModel {
+    double value = 1;
+    AutoCloseUnitGrpc unit = 2;
+}
+
+enum AutoCloseUnitGrpc {
+    AssetAmount = 0;
+    PriceRate = 1;
+}
+
+message PositionTopUpGrpcModel {
+    string id = 1;
+    int64 date_micros = 2;
+    map<string, double> assets = 3;
+    double instrument_price = 4;
+    map<string, double> asset_prices = 5;
+}
+
+service PositionsExecutorService{
+    rpc OpenPosition(OpenPositionGrpcRequest) returns (OpenPositionGrpcResponse);
+    rpc ClosePosition(ClosePositionGrpcRequest) returns (ClosePositionGrpcResponse);
+    rpc UpdatePosition(UpdatePositionGrpcRequest) returns (UpdatePositionGrpcResponse);
+    rpc GetPositions(GetPositionsGrpcRequest) returns (GetPositionsGrpcResponse);
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

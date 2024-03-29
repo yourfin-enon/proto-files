@@ -1,0 +1,134 @@
+syntax = "proto3";
+package deposits;
+import public "google/protobuf/empty.proto";
+
+message GetAddressGrpcRequest {
+  string wallet_id = 1;
+  string trader_id = 2;
+  string asset_symbol = 3;
+  string blockchain_symbol = 4;
+}
+
+message GetAddressGrpcResponse {
+  DepositAddressGrpcModel item = 1;
+}
+
+message CreateAddressGrpcRequest {
+  string wallet_id = 1;
+  string trader_id = 2;
+  string asset_symbol = 3;
+  string blockchain_symbol = 4;
+}
+
+message CreateAddressGrpcResponse {
+  DepositAddressGrpcModel item = 1;
+}
+
+message DepositAddressGrpcModel {
+  string address = 1;
+  optional string memo = 2;
+  string asset_symbol = 3;
+  string blockchain_symbol = 4;
+  string trader_id = 5;
+  string wallet_id = 6;
+}
+
+message GetCryptoBuyPricesGrpcRequest {}
+
+message GetCryptoBuyPricesGrpcResponse {
+  map<string, CryptoBuyPricesModel> assets = 1;
+}
+
+message CryptoBuyPricesModel {
+  map<string, double> prices = 1;
+}
+
+message MakeCryptoBuyGrpcRequest {
+  string fiat_asset_amount = 1;
+  string fiat_asset_symbol = 2;
+  string crypto_asset_symbol = 3;
+  string country = 4;
+  string payment_method_id = 5;
+  string wallet_id = 6;
+  string trader_id = 7;
+  string blockchain_symbol = 8;
+}
+
+message MakeCryptoBuyGrpcResponse {
+  string payment_url = 1;
+}
+
+message GetCryptoBuySettingsGrpcRequest {
+  optional string country_code = 1;
+}
+
+message GetCryptoBuySettingsGrpcResponse {
+  map<string, CryptoBuyAssetGrpcModel>  assets = 1;
+  repeated string available_countries = 2;
+}
+
+message CryptoBuyAssetGrpcModel {
+  string fiat_asset_symbol = 1;
+  map<string, CryptoBuyCryptoAssetGrpcModel> crypto_assets = 2;
+  map<string, CryptoBuyPaymentMethodGrpcModel> payment_methods = 3;
+}
+
+message CryptoBuyCryptoAssetGrpcModel {
+  string asset_symbol = 1;
+  optional double min_amount = 2;
+  optional double max_amount = 3;
+  string blockchain_symbol = 4;
+  double blockchain_fee_amount = 5;
+}
+
+message CryptoBuyPaymentMethodGrpcModel {
+  string id = 1;
+  optional double min_amount = 2;
+  optional double max_amount = 3;
+  double processing_fee_percent = 4;
+  double processing_fee_fixed_amount = 5;
+}
+
+message GetExactAddressGrpcRequest {
+  string address = 1;
+}
+
+message GetExactAddressGrpcResponse {
+  DepositAddressGrpcModel item = 1;
+}
+
+message GetCryptoBuyPaymentPageGrpcRequest {
+  string payment_provider_id = 1;
+  double fiat_asset_amount = 2;
+  string fiat_asset_symbol = 3;
+  string crypto_asset_symbol = 4;
+  string trader_id = 5;
+  string wallet_id = 6;
+}
+
+message GetCryptoBuyPaymentPageGrpcResponse {
+  string message = 1;
+  bool is_success = 2;
+  PaymentPageGrpcModel item = 3;
+}
+
+message PaymentPageGrpcModel {
+  PaymentPageTypeGrpc value_type = 1;
+  string value = 2;
+}
+
+enum PaymentPageTypeGrpc {
+  URL = 0;
+  HTML = 1;
+}
+
+service DepositsService{
+  rpc GetAddress(GetAddressGrpcRequest) returns (GetAddressGrpcResponse);
+  rpc CreateAddress(CreateAddressGrpcRequest) returns (CreateAddressGrpcResponse);
+  rpc GetCryptoBuyPrices(GetCryptoBuyPricesGrpcRequest) returns (GetCryptoBuyPricesGrpcResponse);
+  rpc MakeCryptoBuy(MakeCryptoBuyGrpcRequest) returns (MakeCryptoBuyGrpcResponse);
+  rpc GetCryptoBuySettings(GetCryptoBuySettingsGrpcRequest) returns (GetCryptoBuySettingsGrpcResponse);
+  rpc GetExactAddress(GetExactAddressGrpcRequest) returns (GetExactAddressGrpcResponse);
+  rpc GetCryptoBuyPaymentPage(GetCryptoBuyPaymentPageGrpcRequest) returns (GetCryptoBuyPaymentPageGrpcResponse);
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

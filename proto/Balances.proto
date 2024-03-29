@@ -1,0 +1,107 @@
+syntax = "proto3";
+package balances;
+import public "google/protobuf/empty.proto";
+
+message UpdateBalancesGrpcRequest {
+    string operation_id = 1;
+    int64 timestamp = 2;
+    string description = 3;
+    repeated BalanceUpdateGrpcModel updates = 4;
+    UpdateOperationTypeGrpc operation_type = 5;
+    string process_id = 6;
+}
+
+message UpdateBalancesGrpcResponse {
+    string operation_id = 1;
+    int64 operation_timestamp = 2;
+    repeated BalanceGrpcModel balances = 3;
+    bool is_success = 4;
+    map<int32, BalanceUpdateGrpcModel> updates_by_status = 5;
+}
+
+message GetBalancesGrpcRequest {
+    string trader_id = 1;
+    string wallet_id = 2;
+}
+
+message GetBalancesGrpcResponse {
+    repeated BalanceGrpcModel Items = 1;
+}
+
+message BalanceGrpcModel {
+    string id = 1;
+    string trader_id = 2;
+    int64 created_date = 3;
+    string wallet_id = 4;
+    string asset_symbol = 5;
+    double amount = 6;
+    int64 last_update_date = 7;
+    int32 updates_count = 8;
+    bool is_locked = 9;
+    double reserved_amount = 10;
+    double bonus = 11;
+    double reserved_bonus = 12;
+}
+
+message BalanceUpdateGrpcModel {
+    int32 number = 1;
+    string asset_symbol = 2;
+    double amount = 3;
+    string wallet_id = 4;
+    string trader_id = 5;
+    double reserved_amount = 6;
+    BalanceUpdateReasonGrpc reason = 7;
+    double bonus = 8;
+    double reserve_bonus = 9;
+}
+
+enum BalanceUpdateStatusGrpc {
+    FAILED = 0;
+    APPLIED = 1;
+    LOW_BALANCE = 2;
+}
+
+message SetBalanceLockGrpcRequest {
+    string id = 1;
+    string wallet_id = 2;
+    string trader_id = 3;
+    bool is_locked = 9;
+}
+
+message SetBalanceLockGrpcResponse {}
+
+enum BalanceUpdateReasonGrpc {
+    ADMIN_CORRECTED = 0;
+    DEPOSIT_APPROVED = 1;
+    WITHDRAWAL_APPROVED = 2;
+    PNL_REALIZED = 3;
+    POSITION_PENDING = 4;
+    POSITION_ACTIVATED = 5;
+    POSITION_FILLED = 6;
+    POSITION_CANCELED = 7;
+    POSITION_TOP_UP = 8;
+    POSITION_TOP_UP_CANCELED = 9;
+    WITHDRAWAL_FAILED = 10;
+    EXCHANGE_QUOTE_EXECUTED = 11;
+    PROMO_ACCRUAL = 12;
+    BONUS_ACCRUAL = 13;
+    BONUS_DEDUCTION = 14;
+    BONUS_EXPIRATION = 15;
+}
+
+enum UpdateOperationTypeGrpc {
+    CORRECTION = 0;
+    DEPOSIT = 1;
+    WITHDRAWAL = 2;
+    POSITION = 3;
+    EXCHANGE_QUOTE = 4;
+    PROMO_CAMPAIGN = 5;
+    BONUS = 6;
+}
+
+service BalancesService{
+    rpc GetBalances(GetBalancesGrpcRequest) returns (GetBalancesGrpcResponse);
+    rpc UpdateBalances(UpdateBalancesGrpcRequest) returns (UpdateBalancesGrpcResponse);
+    rpc SetBalanceLock(SetBalanceLockGrpcRequest) returns (SetBalanceLockGrpcResponse);
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

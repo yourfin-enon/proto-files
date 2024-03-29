@@ -1,0 +1,81 @@
+syntax = "proto3";
+import public "google/protobuf/empty.proto";
+package assets;
+
+message AddOrUpdateAssetGrpcRequest{
+    AssetGrpcModel Item = 1;
+}
+
+message AddOrUpdateAssetGrpcResponse{}
+
+message DeleteAssetGrpcRequest{
+    string Symbol = 1;
+}
+
+message DeleteAssetGrpcResponse{}
+
+message GetListAssetsGrpcRequest{}
+
+message GetListAssetsGrpcResponse{
+    repeated AssetGrpcModel Items = 1;
+}
+
+message AssetGrpcModel{
+    int32 Accuracy = 1;
+    bool IsEnabled = 2;
+    string Description = 3;
+    string Symbol = 4;
+    string IconUrl = 5;
+    AssetTypeGrpc AssetType = 6;
+    int32 Weight = 7;
+    repeated string BrandIds = 8;
+    bool CanBeBase = 9;
+}
+
+message GetTrendingAssetsGrpcRequest{
+    int32 Limit = 1;
+}
+
+message GetTrendingAssetsGrpcResponse{
+    repeated TrendingAssetGrpcModel Items = 1;
+}
+
+message TrendingAssetGrpcModel {
+    string Symbol = 1;
+    string Name = 2;
+    string IconUrl = 3;
+    double LastPrice = 4;
+    double PriceChangePercent24h = 5;
+}
+
+enum AssetTypeGrpc {
+    CRYPTO = 0;
+    FIAT = 1;
+}
+
+message GetAssetStatisticGrpcRequest{
+    string Symbol = 1;
+}
+
+message GetAssetStatisticGrpcResponse{
+    AssetStatisticGrpcModel Item = 1;
+}
+
+message AssetStatisticGrpcModel {
+    double roi = 1;
+    double max_supply = 2;
+    double circulating_supply = 3;
+    double market_cap = 4;
+    int32 rank = 5;
+    double last_price = 6;
+    string Symbol = 7;
+}
+
+service AssetsService{
+    rpc AddOrUpdate(AddOrUpdateAssetGrpcRequest) returns (AddOrUpdateAssetGrpcResponse);
+    rpc Delete(DeleteAssetGrpcRequest) returns (DeleteAssetGrpcResponse);
+    rpc GetList(GetListAssetsGrpcRequest) returns (GetListAssetsGrpcResponse);
+    rpc GetTrending(GetTrendingAssetsGrpcRequest) returns (GetTrendingAssetsGrpcResponse);
+    rpc GetStatistic(GetAssetStatisticGrpcRequest) returns (GetAssetStatisticGrpcResponse);
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

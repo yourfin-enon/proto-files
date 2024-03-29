@@ -1,0 +1,62 @@
+syntax = "proto3";
+package candlesimport;
+
+message AddImportTaskGrpcResponse{
+    bool is_error = 1;
+    string message = 2;
+}
+
+message AddImportTaskGrpcRequest{
+    ImportTaskGrpcModel item = 1;
+}
+
+message DeleteImportTaskGrpcResponse{}
+
+message DeleteImportTaskGrpcRequest{
+    string instrument = 1;
+    CandleTypeGrpc candle_type = 2;
+}
+
+message GetImportTasksGrpcResponse{
+    repeated ImportTaskGrpcModel items = 1;
+}
+
+message GetImportTasksGrpcRequest{}
+
+message ImportTaskGrpcModel {
+    string instrument = 1;
+    CandleTypeGrpc candle_type = 2;
+    int64 start_datetime = 3;
+    int64 end_datetime = 4;
+    int64 current_datetime = 5;
+    CandlesSourceGrpc source = 6;
+    optional double volume_multiplier = 7;
+}
+
+enum CandleTypeGrpc {
+    MINUTE = 0;
+    HOUR = 1;
+    DAY = 2;
+    MONTH = 3;
+    ThreeMinutes = 4;
+    FiveMinutes = 5;
+    FifteenMinutes = 6;
+    ThirtyMinutes = 7;
+    TwoHours = 8;
+    FourHours = 9;
+    SixHours = 10;
+    EightHours = 11;
+    TwelveHours = 12;
+    ThreeDays = 13;
+    SevenDays = 14;
+}
+
+enum CandlesSourceGrpc {
+    BINANCE = 0;
+}
+
+service CandlesImportService{
+    rpc AddTask(AddImportTaskGrpcRequest) returns (AddImportTaskGrpcResponse);
+    rpc DeleteTask(DeleteImportTaskGrpcRequest) returns (DeleteImportTaskGrpcResponse);
+    rpc GetTasks(GetImportTasksGrpcRequest) returns (GetImportTasksGrpcResponse);
+}

@@ -1,0 +1,47 @@
+syntax = "proto3";
+package clientblockers;
+import public "google/protobuf/empty.proto";
+
+message GetClientBlockersGrpcRequest {
+  repeated string trader_ids = 1;
+  repeated ClientBlockerTypeGrpc blocker_types = 2;
+  bool exclude_expired = 3;
+  int32 limit = 4;
+  optional int64 start_date_micros = 5;
+  optional int64 end_date_micros = 6;
+  optional int64 page_id = 7;
+}
+
+message GetClientBlockersGrpcResponse {
+  repeated ClientBlockerGrpcModel items = 1;
+  bool is_success = 2;
+  string message = 3;
+  optional int64 next_page_id = 4;
+}
+
+message ClientBlockerGrpcModel {
+  string trader_id = 1;
+  int64 create_date_micros = 2;
+  int64 expire_date_micros = 3;
+  ClientBlockerTypeGrpc blocker_type = 4;
+  ClientBlockerReasonGrpc reason = 5;
+}
+
+enum ClientBlockerTypeGrpc {
+  WITHDRAWAL = 0;
+  LOGIN = 1;
+  TRADE = 2;
+  DEPOSIT = 3;
+}
+
+enum ClientBlockerReasonGrpc {
+  MANUAL = 0;
+  PASSWORD_CHANGE = 1;
+  EMAIL_CHANGE = 2;
+  PHONE_CHANGE = 3;
+}
+
+service ClientBlockersService{
+  rpc GetPage(GetClientBlockersGrpcRequest) returns (GetClientBlockersGrpcResponse);
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

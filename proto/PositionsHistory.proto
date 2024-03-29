@@ -1,0 +1,124 @@
+syntax = "proto3";
+package positionshistory;
+import public "google/protobuf/empty.proto";
+
+message GetHistoryPositionsGrpcRequest {
+    repeated string wallet_ids = 1;
+    repeated OrderTypeGrpc order_types = 2;
+    repeated OrderSideGrpc order_sides = 3;
+    repeated PositionStatusGrpc position_statuses = 4;
+    optional int64 start_date_micros = 5;
+    optional int64 end_date_micros = 6;
+    int32 limit = 7;
+    repeated string position_ids = 8;
+    repeated string trader_ids = 9;
+    optional int64 page_id = 10;
+}
+
+message GetHistoryPositionsGrpcResponse {
+    bool is_success = 1;
+    string message = 2;
+    repeated HistoryPositionGrpcModel positions = 3;
+    optional int64 next_page_id = 4;
+}
+
+message GetHistoryPositionGrpcRequest {
+    string position_id = 1;
+}
+
+message GetHistoryPositionGrpcResponse {
+    bool is_success = 1;
+    string message = 2;
+    HistoryPositionGrpcModel Item = 3;
+}
+
+message HistoryPositionGrpcModel {
+    string Id = 1;
+    HistoryOrderGrpcModel Order = 2;
+    optional int64 ActivateDateMicros = 3;
+    optional double ActivatePrice = 4;
+    optional int64 CloseDateMicros = 5;
+    optional double ClosePrice = 6;
+    optional double Pnl = 7;
+    map<string, double> ActivateAssetPrices = 8;
+    map<string, double> CloseAssetPrices = 9;
+    map<string, double> OpenAssetPrices = 10;
+    int64 OpenDateMicros = 11;
+    map<string, double> AssetPnls = 12;
+    PositionStatusGrpc Status = 13;
+    optional PositionCloseReasonGrpc CloseReason = 14;
+    repeated HistoryPositionTopUpGrpcModel TopUps = 15;
+    map<string, double> TotalInvestAssets = 16;
+    double OpenPrice = 17;
+}
+
+message HistoryOrderGrpcModel {
+    string Id = 1;
+    string WalletId = 2;
+    string Instrument = 3;
+    string BaseAsset = 4;
+    double Leverage = 5;
+    OrderSideGrpc Side = 7;
+    AutoCloseConfigGrpcModel TakeProfit = 8;
+    AutoCloseConfigGrpcModel StopLoss = 9;
+    double StopOutPercent = 10;
+    double MarginCallPercent = 11;
+    map<string, double> InvestAssets = 12;
+    optional double DesirePrice = 13;
+    bool TopUpEnabled = 14;
+    OrderTypeGrpc OrderType = 15;
+    string TraderId = 16;
+    int64 CreateDateMicros = 17;
+    double TopUpPercent = 18;
+}
+
+message HistoryPositionTopUpGrpcModel {
+    string id = 1;
+    int64 date_micros = 2;
+    map<string, double> assets = 3;
+    double instrument_price = 4;
+    map<string, double> asset_prices = 5;
+}
+
+
+enum OrderSideGrpc {
+    Buy = 0;
+    Sell = 1;
+}
+
+enum OrderTypeGrpc {
+    Market = 0;
+    Limit = 1;
+}
+
+enum PositionStatusGrpc {
+    Pending = 0;
+    Active = 1;
+    Filled = 2;
+    Canceled = 3;
+}
+
+enum PositionCloseReasonGrpc {
+    ClientCommand = 0;
+    StopOut = 1;
+    TakeProfit = 2;
+    StopLoss = 3;
+    AdminCommand = 4;
+    InsufficientBalance = 5;
+}
+
+message AutoCloseConfigGrpcModel {
+    double value = 1;
+    AutoCloseUnitGrpc unit = 2;
+}
+
+enum AutoCloseUnitGrpc {
+    AssetAmount = 0;
+    PriceRate = 1;
+}
+
+service PositionsHistoryService{
+    rpc GetPositions(GetHistoryPositionsGrpcRequest) returns (GetHistoryPositionsGrpcResponse);
+    rpc GetPosition(GetHistoryPositionGrpcRequest) returns (GetHistoryPositionGrpcResponse);
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

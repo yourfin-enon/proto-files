@@ -1,0 +1,139 @@
+syntax = "proto3";
+package bonuses;
+import public "google/protobuf/empty.proto";
+
+message AddOrUpdateCampaignsGrpcRequest {
+  repeated BonusCampaignGrpcModel items = 1;
+}
+
+message AddOrUpdateCampaignsGrpcResponse {
+  bool is_success = 1;
+  string message = 2;
+}
+
+message BonusCampaignGrpcModel {
+  string id = 1;
+  string name = 2;
+  int64 updated_date_micros = 3;
+  BonusAmountTypeGrpc bonus_amount_type = 5;
+  string bonus_asset_symbol = 6;
+  BonusActionTypeGrpc target_action = 7;
+  int64 trigger_lifetime_minutes = 10;
+  double max_bonus_amount = 11;
+  BonusTriggerTypeGrpc trigger_type = 12;
+  repeated string alpha_3_countries = 13;
+  int32 priority = 14;
+  repeated BonusCampaignTierGrpcModel tiers = 15;
+  int64 expire_date_micros = 16;
+}
+
+enum BonusTriggerTypeGrpc {
+  Registration = 0;
+  Manual = 1;
+  Code = 2;
+}
+
+enum BonusAmountTypeGrpc {
+  Percent = 0;
+  Absolute = 1;
+}
+
+enum BonusActionTypeGrpc {
+  FirstDeposit = 0;
+  Deposit = 1;
+}
+
+message GetCampaignsGrpcRequest {
+}
+
+message GetCampaignsGrpcResponse {
+  bool is_success = 1;
+  string message = 2;
+  repeated BonusCampaignGrpcModel items = 3;
+}
+
+message DeleteCampaignGrpcRequest {
+  string id = 1;
+}
+
+message DeleteCampaignGrpcResponse {
+  bool is_success = 1;
+  string message = 2;
+}
+
+enum BonusTriggerStatusGrpc {
+  Pending = 0;
+  Succeeded = 1;
+  Cancelled = 2;
+  Failed = 3;
+}
+
+message GetBonusTriggersGrpcRequest {
+  repeated string trader_ids = 1;
+  repeated int32 statuses = 2;
+  repeated string campaign_ids = 3;
+  int32 limit = 4;
+  optional int64 page_id = 5;
+}
+
+message GetBonusTriggersGrpcResponse {
+  bool is_success = 1;
+  string message = 2;
+  repeated BonusTriggerGrpcModel items = 3;
+  optional int64 next_page_id = 4;
+}
+
+message BonusTriggerGrpcModel {
+  string id = 1;
+  int64 created_date_micros = 2;
+  string trader_id = 3;
+  BonusTriggerStatusGrpc status = 4;
+  string campaign_id = 5;
+  string created_by = 6;
+  int64 updated_date_micros = 7;
+}
+
+message BonusCampaignTierGrpcModel {
+  double from_amount = 1;
+  double to_amount = 2;
+  double bonus_amount = 3;
+  string id = 4;
+}
+
+message CreateBonusTriggerGrpcRequest {
+  string trader_id = 1;
+  string campaign_id = 2;
+  optional string created_by = 3;
+}
+
+message CreateBonusTriggerGrpcResponse {
+  bool is_success = 1;
+  string message = 2;
+  optional BonusTriggerGrpcModel item = 3;
+}
+
+message GetPendingBonusGrpcRequest {
+  string trader_id = 1;
+}
+
+message GetPendingBonusGrpcResponse {
+  bool is_success = 1;
+  string message = 2;
+  optional PendingBonusGrpcModel item = 3;
+}
+
+message PendingBonusGrpcModel {
+  BonusTriggerGrpcModel trigger = 1;
+  BonusCampaignGrpcModel campaign = 2;
+}
+
+service BonusesService{
+  rpc AddOrUpdateCampaigns(AddOrUpdateCampaignsGrpcRequest) returns (AddOrUpdateCampaignsGrpcResponse);
+  rpc GetCampaigns(GetCampaignsGrpcRequest) returns (GetCampaignsGrpcResponse);
+  rpc GetTriggers(GetBonusTriggersGrpcRequest) returns (GetBonusTriggersGrpcResponse);
+  rpc DeleteCampaign(DeleteCampaignGrpcRequest) returns (DeleteCampaignGrpcResponse);
+  rpc CreateTrigger(CreateBonusTriggerGrpcRequest) returns (CreateBonusTriggerGrpcResponse);
+  rpc GetPending(GetPendingBonusGrpcRequest) returns (GetPendingBonusGrpcResponse);
+
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

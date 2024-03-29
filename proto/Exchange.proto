@@ -1,0 +1,131 @@
+syntax = "proto3";
+package exchange;
+import public "google/protobuf/empty.proto";
+
+message GenerateQuoteGrpcRequest {
+  string from_asset_symbol = 1;
+  string to_asset_symbol = 2;
+  string req_asset_symbol = 3;
+  double req_asset_amount = 4;
+  string trader_id = 5;
+  string wallet_id = 6;
+  ExchangeSceneTypeGrpc req_scene = 7;
+  string operation_id = 8;
+}
+
+message GenerateQuoteGrpcResponse {
+  optional string err_msg = 1;
+  optional QuoteGrpcModel item = 2;
+}
+
+message ExecuteQuoteGrpcRequest {
+  string quote_id = 1;
+  string trader_id = 2;
+}
+
+message ExecuteQuoteGrpcResponse {
+  optional string err_msg = 1;
+  optional QuoteGrpcModel item = 2;
+}
+
+message GetQuotesPageGrpcRequest {
+  optional int64 start_ts_micros = 1;
+  optional int64 end_ts_micros = 5;
+  int32 limit = 6;
+  repeated string trader_ids = 8;
+  repeated string wallet_ids = 9;
+  optional int64 page_id = 10;
+  repeated string from_asset_symbols = 11;
+  repeated string to_asset_symbols = 12;
+  repeated string operation_ids = 13;
+  repeated string from_or_to_asset_symbols = 14;
+}
+
+message GetQuotesPageGrpcResponse {
+  optional string err_msg = 1;
+  repeated QuoteGrpcModel items = 2;
+  optional int64 next_page_id = 3;
+}
+
+message QuoteGrpcModel {
+  string id = 1;
+  string trader_id = 2;
+  string wallet_id = 3;
+  int64 create_ts_micros = 4;
+  int64 refresh_period_secs = 5;
+  double from_asset_amount = 6;
+  string from_asset_symbol = 7;
+  string to_asset_symbol = 8;
+  double to_asset_amount = 9;
+  double req_asset_amount = 10;
+  string req_asset_symbol = 11;
+  double price = 12;
+  string fee_asset_symbol = 13;
+  double fee_asset_amount = 14;
+  QuoteTypeGrpc quote_type = 15;
+  ExchangeSceneTypeGrpc req_scene = 16;
+  string operation_id = 17;
+}
+
+enum QuoteTypeGrpc {
+  Direct = 0;
+  Indirect = 1;
+  Cross = 2;
+}
+
+enum ExchangeSceneTypeGrpc {
+  Convert = 0;
+  PositionOpen = 1;
+  PositionTopUp = 2;
+}
+
+message SwapAssetsGrpcRequest {
+  string trader_id = 1;
+  string wallet_id = 2;
+  string operation_id = 3;
+  map<string, double> from_asset_amounts = 4;
+  string to_asset_symbol = 5;
+  ExchangeSceneTypeGrpc req_scene = 6;
+}
+
+message SwapAssetsGrpcResponse {
+  optional string err_msg = 1;
+  repeated QuoteGrpcModel items = 2;
+}
+
+message GetFromAssetsGrpcRequest {
+  string to_asset_symbol = 2;
+}
+
+message GetFromAssetsGrpcResponse {
+  optional string err_msg = 1;
+  repeated ExchangeAssetGrpcModel assets = 2;
+}
+
+message GetToAssetsGrpcRequest {
+  string from_asset_symbol = 1;
+}
+
+message GetToAssetsGrpcResponse {
+  optional string err_msg = 1;
+  repeated ExchangeAssetGrpcModel assets = 2;
+}
+
+message ExchangeAssetGrpcModel {
+  string symbol = 1;
+  double raw_min_amount = 2;
+  double raw_max_amount = 3;
+  double fee_percent = 4;
+  double normalized_min_amount = 5;
+  double normalized_max_amount = 6;
+}
+
+service ExchangeService {
+  rpc generate_quote(GenerateQuoteGrpcRequest) returns (GenerateQuoteGrpcResponse);
+  rpc execute_quote(ExecuteQuoteGrpcRequest) returns (ExecuteQuoteGrpcResponse);
+  rpc get_quotes_page(GetQuotesPageGrpcRequest) returns (GetQuotesPageGrpcResponse);
+  rpc swap_assets(SwapAssetsGrpcRequest) returns (SwapAssetsGrpcResponse);
+  rpc get_from_assets(GetFromAssetsGrpcRequest) returns (GetFromAssetsGrpcResponse);
+  rpc get_to_assets(GetToAssetsGrpcRequest) returns (GetToAssetsGrpcResponse);
+  rpc ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

@@ -1,0 +1,52 @@
+syntax = "proto3";
+package wallets;
+import public "google/protobuf/empty.proto";
+
+message GetWalletsGrpcRequest {
+    string trader_id = 1;
+}
+
+message GetWalletsGrpcResponse {
+    repeated WalletGrpcModel Items = 1;
+}
+
+message WalletGrpcModel {
+    string id = 1;
+    string trader_id = 2;
+    int64 created_date = 3;
+    string base_asset_symbol = 4;
+    WalletTypeGrpc wallet_type = 5;
+}
+
+enum WalletTypeGrpc {
+    Main = 0;
+    Demo = 1;
+}
+
+message TopUpDemoGrpcRequest {
+    string wallet_id = 1;
+    string trader_id = 2;
+}
+
+message TopUpDemoGrpcResponse {
+    bool is_success = 1;
+    string Message = 2;
+}
+
+message PreviewTopUpDemoGrpcRequest {
+    string wallet_id = 1;
+    string trader_id = 2;
+}
+
+message PreviewTopUpDemoGrpcResponse {
+    bool is_success = 1;
+    string Message = 2;
+    map<string, double> amounts_by_assets = 3;
+}
+
+service WalletsService{
+    rpc GetWallets(GetWalletsGrpcRequest) returns (GetWalletsGrpcResponse);
+    rpc TopUpDemoWallet(TopUpDemoGrpcRequest) returns (TopUpDemoGrpcResponse);
+    rpc PreviewTopUpDemoWallet(PreviewTopUpDemoGrpcRequest) returns (PreviewTopUpDemoGrpcResponse);
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

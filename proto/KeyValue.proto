@@ -1,0 +1,61 @@
+syntax = "proto3";
+package keyvalue;
+import public "google/protobuf/empty.proto";
+
+message SaveKeyValueGrpcRequest {
+  string trader_id = 1;
+  string key = 2;
+  string value = 3;
+}
+
+message GetKeyValueGrpcRequest {
+  string trader_id = 1;
+  string key = 2;
+}
+
+message GetKeyValueGrpcResponse {
+  string value = 1;
+}
+
+message GetAllKeyValueGrpcRequest {
+  string trader_id = 1;
+  repeated string keys = 2;
+}
+
+message GetAllKeyValueGrpcResponse {
+  repeated KeyValueGrpcModel items = 1;
+}
+
+message KeyValueGrpcModel {
+  string key = 1;
+  string value = 2;
+}
+
+message SaveFavoriteInstrumentsGrpcRequest {
+  ClientTypeGrpc client_type = 1;
+  repeated string instruments = 2;
+  string trader_id = 3;
+}
+
+enum ClientTypeGrpc {
+  Mobile = 0;
+  Web = 1;
+}
+
+message GetFavoriteInstrumentsGrpcRequest {
+  ClientTypeGrpc client_type = 1;
+  string trader_id = 2;
+}
+
+message GetFavoriteInstrumentsGrpcResponse {
+  repeated string instruments = 1;
+}
+
+service KeyValueServer {
+  rpc SaveFavoriteInstruments(SaveFavoriteInstrumentsGrpcRequest) returns (google.protobuf.Empty);
+  rpc GetFavoriteInstruments(GetFavoriteInstrumentsGrpcRequest) returns (GetFavoriteInstrumentsGrpcResponse);
+  rpc Save(SaveKeyValueGrpcRequest) returns (google.protobuf.Empty);
+  rpc Get(GetKeyValueGrpcRequest) returns (GetKeyValueGrpcResponse);
+  rpc GetAll(GetAllKeyValueGrpcRequest) returns (GetAllKeyValueGrpcResponse);
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

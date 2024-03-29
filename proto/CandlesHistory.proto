@@ -1,0 +1,78 @@
+syntax = "proto3";
+package candleshistory;
+import public "google/protobuf/empty.proto";
+
+message GetCandlesGrpcRequest {
+    CandleTypeGrpc candle_type = 1;
+    string instrument = 2;
+    int64 from_timestamp = 3;
+    int64 to_timestamp = 4;
+    int32 limit = 5;
+}
+
+message GetCandlesGrpcResponse {
+    repeated BidAskCandleGrpcModel Items = 1;
+    bool has_next = 2;
+    int64 next_timestamp = 3;
+}
+
+message BidAskCandleGrpcModel {
+    CandleTypeGrpc candle_type = 1;
+    int64 timestamp = 2;
+    string instrument = 3;
+    CandleDataGrpcModel bid_data = 4;
+    CandleDataGrpcModel ask_data = 5;
+}
+
+message CandleDataGrpcModel {
+    string open = 1;
+    string close = 2;
+    string high = 3;
+    string low = 4;
+    int64 timestamp = 5;
+    string volume = 6;
+}
+
+enum CandleTypeGrpc {
+    MINUTE = 0;
+    HOUR = 1;
+    DAY = 2;
+    MONTH = 3;
+    FiveMinutes = 5;
+    FifteenMinutes = 6;
+    ThirtyMinutes = 7;
+    TwoHours = 8;
+    FourHours = 9;
+    SixHours = 10;
+    EightHours = 11;
+    TwelveHours = 12;
+    ThreeDays = 13;
+    SevenDays = 14;
+}
+
+message AddOrUpdateCandlesGrpcRequest {
+    repeated BidAskCandleGrpcModel Items = 1;
+}
+
+message AddOrUpdateCandlesGrpcResponse {}
+
+message GetCandlesPageGrpcRequest {
+    CandleTypeGrpc candle_type = 1;
+    string instrument = 2;
+    int64 from_timestamp = 3;
+    int64 to_timestamp = 4;
+    int32 limit = 5;
+    optional string next_page_id = 6;
+}
+
+message GetCandlesPageGrpcResponse {
+    repeated BidAskCandleGrpcModel Items = 1;
+    optional string next_page_id = 2;
+}
+
+service CandlesService{
+    rpc GetCandles(GetCandlesGrpcRequest) returns (GetCandlesGrpcResponse);
+    rpc GetPage(GetCandlesPageGrpcRequest) returns (GetCandlesPageGrpcResponse);
+    rpc AddOrUpdateCandles(AddOrUpdateCandlesGrpcRequest) returns (AddOrUpdateCandlesGrpcResponse);
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

@@ -1,0 +1,92 @@
+syntax = "proto3";
+package transactions;
+import public "google/protobuf/empty.proto";
+
+message GetTransactionsGrpcRequest {
+    repeated string WalletIds = 1;
+    repeated TransactionTypeGrpc transaction_types = 2;
+    repeated TransactionStatusGrpc transaction_statuses = 3;
+    optional int64 StartDateMicros = 4;
+    optional int64 EndDateMicros = 5;
+    int32 Limit = 6;
+    repeated string TxIds = 7;
+    repeated string TraderIds = 8;
+    optional int64 PageId = 9;
+    repeated string AssetSymbols = 10;
+}
+
+message GetTransactionsGrpcResponse {
+    bool is_success = 1;
+    string message = 2;
+    repeated TransactionGrpcModel items = 3;
+    optional int64 next_page_id = 4;
+}
+
+message CreateTransactionGrpcRequest {
+    string wallet_id = 1;
+    TransactionTypeGrpc transaction_type = 2;
+    TransactionStatusGrpc transaction_status = 3;
+    string trader_id = 4;
+    string asset = 5;
+    string blockchain = 6;
+    string external_id = 7;
+    PaymentProviderGrpc payment_provider = 8;
+    double amount = 9;
+    double fee_amount = 10;
+    string destination_address = 11;
+    string tx_id = 12;
+    string id = 13;
+    double payment_provider_fee_amount = 14;
+    optional string memo = 15;
+}
+
+message CreateTransactionGrpcResponse {
+    bool is_success = 1;
+    string message = 2;
+    TransactionGrpcModel item = 3;
+}
+
+message TransactionGrpcModel {
+    string Id = 1;
+    int64 CreateDateMicros = 2;
+    int64 LastUpdateDateMicros = 3;
+    string AssetSymbol = 4;
+    string TxId = 5;
+    string DestinationAddress = 6;
+    string SourceAddress = 7;
+    string WalletId = 8;
+    TransactionTypeGrpc TransactionType = 9;
+    double AssetAmount = 10;
+    double EstimatePrice = 11;
+    string EstimateAsset = 12;
+    string TraderId = 13;
+    string BlockchainSymbol = 14;
+    double FeeAmount = 15;
+    TransactionStatusGrpc TransactionStatus = 16;
+    double PaymentProviderFeeAmount = 17;
+    optional string memo = 18;
+}
+
+enum TransactionTypeGrpc {
+    Deposit = 0;
+    Withdrawal = 1;
+    CryptoBuy = 2;
+}
+
+enum TransactionStatusGrpc {
+    Pending = 0;
+    Approved = 1;
+    Failed = 2;
+    Declined = 3;
+}
+
+enum PaymentProviderGrpc {
+    CoinsPaid = 0;
+    Unlimit = 1;
+}
+
+service TransactionsService{
+    rpc GetTransactions(GetTransactionsGrpcRequest) returns (GetTransactionsGrpcResponse);
+    rpc CreateTransaction(CreateTransactionGrpcRequest) returns (CreateTransactionGrpcResponse);
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

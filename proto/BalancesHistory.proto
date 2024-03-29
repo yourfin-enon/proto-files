@@ -1,0 +1,85 @@
+syntax = "proto3";
+package balanceshistory;
+import public "google/protobuf/empty.proto";
+
+message GetBalanceUpdatesGrpcRequest {
+    repeated string wallet_ids = 1;
+    optional int64 start_date_micros = 2;
+    optional int64 end_date_micros = 3;
+    int32 limit = 4;
+    repeated string operation_ids = 5;
+    repeated string trader_ids = 6;
+    repeated string assets = 7;
+    repeated BalanceUpdateReasonGrpc reasons = 8;
+    optional int64 page_id = 9;
+}
+
+message GetBalanceUpdatesGrpcResponse {
+    bool is_success = 1;
+    string message = 2;
+    repeated BalanceUpdateGrpcModel items = 3;
+    optional int64 next_page_id = 4;
+}
+
+message BalanceUpdateGrpcModel {
+    string id = 1;
+    int32 number = 2;
+    string asset_symbol = 3;
+    double amount = 4;
+    string wallet_id = 5;
+    string trader_id = 6;
+    double reserved_amount = 7;
+    BalanceUpdateReasonGrpc reason = 8;
+    string operation_id = 9;
+    UpdateOperationTypeGrpc operation_type = 10;
+    int64 date_micros = 11;
+    double estimate_price = 12;
+    string estimate_asset = 13;
+    BalanceInfoGrpcModel balance_info = 14;
+    double bonus = 15;
+    double reserved_bonus = 16;
+}
+
+message BalanceInfoGrpcModel {
+    string balance_id = 1;
+    double available_amount_before = 2;
+    double reserved_amount_before = 3;
+    double available_amount_after = 4;
+    double reserved_amount_after = 5;
+    double available_bonus_after = 6;
+    double reserved_bonus_after = 7;
+}
+
+enum BalanceUpdateReasonGrpc {
+    ADMIN_CORRECTED = 0;
+    DEPOSIT_APPROVED = 1;
+    WITHDRAWAL_APPROVED = 2;
+    PNL_REALIZED = 3;
+    POSITION_PENDING = 4;
+    POSITION_ACTIVATED = 5;
+    POSITION_FILLED = 6;
+    POSITION_CANCELED = 7;
+    POSITION_TOP_UP = 8;
+    POSITION_TOP_UP_CANCELED = 9;
+    WITHDRAWAL_FAILED = 10;
+    EXCHANGE_QUOTE_EXECUTED = 11;
+    PROMO_ACCRUAL = 12;
+    BONUS_ACCRUAL = 13;
+    BONUS_DEDUCTION = 14;
+    BONUS_EXPIRATION = 15;
+}
+
+enum UpdateOperationTypeGrpc {
+    CORRECTION = 0;
+    DEPOSIT = 1;
+    WITHDRAWAL = 2;
+    POSITION = 3;
+    EXCHANGE_QUOTE = 4;
+    PROMO_CAMPAIGN = 5;
+    BONUS = 6;
+}
+
+service BalancesHistoryService{
+    rpc GetUpdates(GetBalanceUpdatesGrpcRequest) returns (GetBalanceUpdatesGrpcResponse);
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

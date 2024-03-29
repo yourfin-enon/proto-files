@@ -1,0 +1,23 @@
+syntax = "proto3";
+package withdrawals;
+import public "google/protobuf/empty.proto";
+
+message MakeWithdrawalGrpcRequest {
+    string wallet_id = 1;
+    string trader_id = 2;
+    string asset_symbol = 3;
+    string blockchain_symbol = 4;
+    double amount = 5;
+    string address = 6;
+    optional string tag = 7;
+}
+
+message MakeWithdrawalGrpcResponse {
+    bool is_success = 1;
+    string message = 2;
+}
+
+service WithdrawalsService{
+    rpc MakeWithdrawal(MakeWithdrawalGrpcRequest) returns (MakeWithdrawalGrpcResponse);
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}
