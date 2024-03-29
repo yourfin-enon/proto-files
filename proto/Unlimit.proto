@@ -1,0 +1,123 @@
+syntax = "proto3";
+package unlimit;
+import public "google/protobuf/empty.proto";
+
+message GetCryptoBuyPricesGrpcRequest {}
+
+message GetCryptoBuyPricesGrpcResponse {
+    map<string, CryptoBuyPricesGrpcModel> assets = 1;
+}
+
+message CryptoBuyPricesGrpcModel {
+    map<string, double> prices = 1;
+}
+
+message GetQuoteGrpcRequest {
+    string amount = 1;
+    string fiat_asset_symbol = 2;
+    string crypto_asset_symbol = 3;
+    string country = 4;
+    string payment_method_id = 5;
+    string blockchain_symbol = 6;
+}
+
+message GetQuoteGrpcResponse {
+    string fiat_asset_fee = 1;
+    string crypto_asset_amount = 2;
+}
+
+message BuyCryptoGrpcRequest {
+    string fiat_asset_amount = 1;
+    string fiat_asset_symbol = 2;
+    string crypto_asset_symbol = 3;
+    string country = 4;
+    string payment_method_id = 5;
+    string crypto_deposit_address = 6;
+    string external_id = 7;
+    string blockchain_symbol = 8;
+}
+
+message BuyCryptoGrpcResponse {
+    string payment_url = 1;
+}
+
+message GetPaymentSettingsGrpcRequest {}
+
+message GetPaymentSettingsGrpcResponse {
+    map<string, FiatPaymentAssetGrpcModel> fiat_assets = 1;
+    map<string, CryptoPaymentAssetGrpcModel> crypto_assets = 2;
+    repeated string available_countries = 3;
+}
+
+message FiatPaymentAssetGrpcModel {
+    map<string, PaymentMethodGrpcModel> payment_methods = 1;
+}
+
+message CryptoPaymentAssetGrpcModel {
+    string asset_symbol = 1;
+    double min_amount = 2;
+    double max_amount = 3;
+    string blockchain_symbol = 4;
+    double blockchain_fee_amount = 5;
+}
+
+message PaymentMethodGrpcModel {
+    string id = 1;
+    double min_amount = 2;
+    double max_amount = 3;
+    double processing_fee_percent = 4;
+    double processing_fee_fixed_amount = 5;
+    double processing_fee_min_amount = 6;
+}
+
+message GetPaymentMethodsGrpcRequest {
+    string county_code = 1;
+    string asset_symbol = 2;
+}
+
+message GetPaymentMethodsGrpcResponse {
+    repeated CurrencyPaymentMethodGrpcModel items = 1;
+}
+
+message CurrencyPaymentMethodGrpcModel {
+    string id = 1;
+    double processing_fee_percent = 4;
+    double processing_fee_fixed_amount = 5;
+    double processing_fee_min_amount = 6;
+}
+
+message GetUnlimitPaymentPageGrpcRequest {
+    string client_id = 1;
+    string fiat_asset_symbol = 2;
+    double fiat_asset_amount = 3;
+    string transaction_id = 5;
+    string crypto_asset_symbol = 6;
+    string crypto_address = 7;
+}
+
+message GetUnlimitPaymentPageGrpcResponse {
+    string message = 1;
+    bool is_success = 2;
+    UnlimitPaymentPageGrpcModel item = 3;
+}
+
+message UnlimitPaymentPageGrpcModel {
+    UnlimitPaymentPageType value_type = 1;
+    string value = 2;
+}
+
+enum UnlimitPaymentPageType {
+    URL = 0;
+    HTML = 1;
+}
+
+service UnlimitService{
+    rpc GetQuote(GetQuoteGrpcRequest) returns (GetQuoteGrpcResponse);
+    rpc BuyCrypto(BuyCryptoGrpcRequest) returns (BuyCryptoGrpcResponse);
+    rpc GetCryptoPrices(GetCryptoBuyPricesGrpcRequest) returns (GetCryptoBuyPricesGrpcResponse);
+    rpc GetPaymentSettings(GetPaymentSettingsGrpcRequest) returns (GetPaymentSettingsGrpcResponse);
+    rpc GetPaymentPage(GetUnlimitPaymentPageGrpcRequest) returns (GetUnlimitPaymentPageGrpcResponse);
+    rpc GetPaymentMethods(GetPaymentMethodsGrpcRequest) returns (GetPaymentMethodsGrpcResponse);
+
+    rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty);
+}

@@ -1,0 +1,57 @@
+syntax = "proto3";
+package coinspaid;
+
+message GetBalancesGrpcRequest {
+
+}
+
+message GetBalancesGrpcResponse {
+    repeated BalanceGrpcModel Items = 1;
+}
+
+message BalanceGrpcModel {
+    string asset_symbol = 1;
+    double asset_amount = 2;
+}
+
+message MakeWithdrawalGrpcRequest {
+    string foreign_id = 1;
+    string asset_symbol = 2;
+    string blockchain_symbol = 3;
+    double amount = 4;
+    string address = 5;
+    optional string tag = 6;
+}
+
+message MakeWithdrawalGrpcResponse {
+    bool is_success = 1;
+    string message = 2;
+    WithdrawalInfo info = 3;
+}
+
+message WithdrawalInfo {
+    string id = 1;
+}
+
+message CreateAddressGrpcRequest {
+    string asset_symbol = 1;
+    string blockchain_symbol = 2;
+    string foreign_id = 3;
+}
+
+message CreateAddressGrpcResponse {
+    bool is_success = 1;
+    string message = 2;
+    AddressGrpcModel address = 3;
+}
+
+message AddressGrpcModel {
+    string address = 1;
+    optional string memo = 2;
+}
+
+service CoinspaidService{
+    rpc GetBalances(GetBalancesGrpcRequest) returns (GetBalancesGrpcResponse);
+    rpc MakeWithdrawal(MakeWithdrawalGrpcRequest) returns (MakeWithdrawalGrpcResponse);
+    rpc CreateAddress(CreateAddressGrpcRequest) returns (CreateAddressGrpcResponse);
+}
